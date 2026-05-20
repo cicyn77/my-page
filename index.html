@@ -28,7 +28,6 @@
       box-sizing: border-box;
     }
     body {
-      /* 已换回纯净纯色背景，移除渐变纹理 */
       background: var(--bg);
       min-height: 100vh;
       display: flex;
@@ -436,12 +435,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const STORAGE_KEY = "letter_v1";
+  const STORAGE_KEY = "letter_final_zhuzhu_rect";
   let letters = [];
   let currentImg = null;
   let targetId = null;
   let flippedOnce = false;
   const toast = document.getElementById("toast");
+
   function toggleWrite() {
     document.getElementById("writeCard").classList.toggle("open");
   }
@@ -451,7 +451,49 @@
     document.getElementById("unlockPwd").addEventListener("keydown", (e) => e.key === "Enter" && checkPwd());
   }
   function load() {
-    try { letters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { letters = []; }
+    try { 
+      letters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; 
+      if (letters.length === 0) {
+        const payload = {
+          text: `亲爱的竹竹：
+展信安好。
+
+无论什么事，我第一想到的永远是先分享给你。那些发消息时的雀跃和待回复的期许让人感到安心，因为我知道你一定会回我。
+
+虽然我们远隔重洋还没面基过，彼此之间仍然有许多未曾知晓的细碎过往，可对我而言，你是那无可替代的挚友，这可以称为“电子闺蜜”吗哈哈哈。
+
+我们默契地保留着恰到好处的距离，不刻意窥探彼此的日常，不远不近。但我始终能清晰感受到，你心有我，这就足够了。
+
+许久以来，我一直都是一个人。身边虽然也有过许多朋友，但一旦回到私下就不在有交集；很少拥有一段能长久维系、时时有音讯往来的情谊。
+
+只有你，会接住我所有鸡毛蒜皮的小事。无论我发再多消息，只要你有空，便会耐心作答。一直以来你都包容我的小幼稚，陪我嬉笑打闹，被这般珍视的时刻，我满心欢喜、很幸福。
+
+我俩从来不会向对方倾诉那些负面情绪，总是把美好的一面展现给彼此。但其实长久以来，我一直再焦虑和内耗中；一直不理想的学业，让我对未来感到恐惧，不知该怎么办。直到前段时间，我决定不再继续读书，那颗一直压在胸口的石头如释负重，总算能让人喘口气。所以不要太担心！
+
+好在这一年，你始终在我身旁，给了我许多坚持下去的动力，让我一直坚持到现在。特别庆幸跟竹竹认识，也特别想念你，等有机会我一定要回国找你玩！！
+
+也希望在那些我没能参与的日子里，你一切顺遂，平安无忧。要是心里有委屈、烦心事想倾诉，尽管跟我说，我会一直陪着你、支持你。
+
+只愿这份柔软真挚的情谊久伴不散。
+往后的日子也请多多关照，
+爱你的cc💗💗`,
+          imageBase64: "https://51img2.51txapp.com/2026/04/22/52a33be951a640bfb0b5e2e355feda83!400x400.jpeg",
+          musicUrl: "https://music.163.com/song/media/outer/url?id=3368153040.mp3",
+          musicId: "3368153040"
+        };
+        const encrypted = CryptoJS.AES.encrypt("LETTER:" + JSON.stringify(payload), "0208").toString();
+        const defaultLetter = {
+          id: "L_zhuzhu_love_rect",
+          title: "至亲爱的竹竹",
+          encryptedContent: encrypted,
+          createdAt: "2026-05-20T00:00:00.000Z"
+        };
+        letters.unshift(defaultLetter);
+        save();
+      }
+    } catch { 
+      letters = []; 
+    }
   }
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(letters));
@@ -515,7 +557,7 @@
     const ul = document.getElementById("list");
     if (letters.length === 0) { ul.innerHTML = '<li class="empty">信箱暂无信件</li>'; return; }
     ul.innerHTML = letters.map(l => {
-      const t = new Date(l.createdAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" });
+      const t = new Date(l.createdAt).toLocaleDateString("zh-CN");
       return `
         <li class="letter-item" onclick="openUnlock('${l.id}')">
           <div class="letter-info">
@@ -556,7 +598,7 @@
   }
   function openRead(payload, letter) {
     document.getElementById("readTitle").textContent = letter.title;
-    document.getElementById("readTime").textContent = "写于 " + new Date(letter.createdAt).toLocaleString("zh-CN");
+    document.getElementById("readTime").textContent = "写于 " + new Date(letter.createdAt).toLocaleDateString("zh-CN");
     document.getElementById("readText").textContent = payload.text || "";
     
     if (payload.musicUrl) {
@@ -569,7 +611,10 @@
     } else {
       document.getElementById("readAudio").innerHTML = "";
     }
-    document.getElementById("readImg").innerHTML = payload.imageBase64 ? `<img src="${payload.imageBase64}" style="max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border)">` : "";
+    // 核心修改：改成**横向长方形**，宽>高，和你截图效果一致
+    document.getElementById("readImg").innerHTML = payload.imageBase64 
+      ? `<img src="${payload.imageBase64}" style="width:100%;height:180px;border-radius:10px;border:2px solid var(--border);object-fit:cover;">` 
+      : "";
     switchView("readView");
   }
   function backList() {
@@ -582,9 +627,11 @@
     ["listView", "unlockView", "readView"].forEach(n => document.getElementById(n).classList.remove("active"));
     document.getElementById(name).classList.add("active");
   }
+
   window.onload = function () {
     init();
   }
 </script>
 </body>
 </html>
+
