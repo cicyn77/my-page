@@ -28,9 +28,8 @@
       box-sizing: border-box;
     }
     body {
+      /* 已换回纯净纯色背景，移除渐变纹理 */
       background: var(--bg);
-      background-image: radial-gradient(ellipse at 20% 15%, rgba(180, 150, 120, 0.07) 0%, transparent 55%),
-        radial-gradient(ellipse at 80% 85%, rgba(160, 130, 100, 0.05) 0%, transparent 55%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -49,6 +48,7 @@
       box-shadow: var(--shadow);
       padding: 32px 28px;
       border: 1px solid var(--border);
+      position: relative;
     }
     .top-card {
       order: 1;
@@ -339,6 +339,14 @@
       text-align:center;
       margin-bottom:12px;
     }
+    .ops-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
     @media (max-width: 720px) {
       .card {
         width: 100%;
@@ -347,171 +355,168 @@
   </style>
 </head>
 <body>
-  <div class="card top-card" id="readBox">
-    <div class="view active" id="listView">
-      <h2 class="title">来自某人的信</h2>
-      <p class="subtitle">珍藏每一封温柔的信</p>
-      <ul class="letter-list" id="list"></ul>
-    </div>
-    <div class="view" id="unlockView">
-      <h2 class="title">开启信封</h2>
-      <p id="unlockTitle" class="subtitle"></p>
-      <div class="envelope-box">
-        <div class="envelope" id="env">
-          <div class="env-face env-front">
-            <div class="seal-stamp">信</div>
-          </div>
-          <div class="env-face env-back">
-            <h4 id="envTitle"></h4>
-            <p id="envText" style="font-size:0.78rem;color:#7c7060;max-height:60px;overflow:hidden"></p>
-          </div>
+<div class="card top-card" id="readBox">
+  <div class="view active" id="listView">
+    <h2 class="title">来自某人的信</h2>
+    <p class="subtitle">珍藏每一封温柔的信</p>
+    <ul class="letter-list" id="list"></ul>
+  </div>
+  <div class="view" id="unlockView">
+    <h2 class="title">开启信封</h2>
+    <p id="unlockTitle" class="subtitle"></p>
+    <div class="envelope-box">
+      <div class="envelope" id="env">
+        <div class="env-face env-front">
+          <div class="seal-stamp">信</div>
+        </div>
+        <div class="env-face env-back">
+          <h4 id="envTitle"></h4>
+          <p id="envText" style="font-size:0.78rem;color:#7c7060;max-height:60px;overflow:hidden"></p>
         </div>
       </div>
-      <div class="unlock-center-btn">
-        <div class="form-item">
-          <input type="password" id="unlockPwd" placeholder="输入密码解锁" />
-        </div>
-        <button class="btn btn-primary" onclick="checkPwd()" style="width:100%">开启信</button>
-      </div>
     </div>
-    <div class="view" id="readView">
-      <h2 id="readTitle"></h2>
-      <p class="read-date" id="readTime"></p>
-      <div class="read-audio" id="readAudio"></div>
-      <div class="read-img" id="readImg"></div>
-      <div class="read-content" id="readText"></div>
+    <div class="unlock-center-btn">
+      <div class="form-item">
+        <input type="password" id="unlockPwd" placeholder="输入密码解锁" />
+      </div>
+      <button class="btn btn-primary" onclick="checkPwd()" style="width:100%">开启信</button>
       <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
         <button class="ops-btn" onclick="backList()">返回信箱</button>
       </div>
     </div>
   </div>
-
-  <div class="card write-card" id="writeCard">
-    <div class="write-toggle-bar">
-      <h2 class="title">执笔写信</h2>
-      <span class="toggle-icon" onclick="toggleWrite()">⌄</span>
-    </div>
-    <div class="write-content">
-      <div class="form-item">
-        <label>信件标题</label>
-        <input type="text" id="title" placeholder="给这封信取个温柔的名字" maxlength="60" />
-      </div>
-      <div class="form-item">
-        <label>信件正文</label>
-        <textarea id="content" placeholder="写下想对TA说的话……"></textarea>
-      </div>
-      <div class="form-item">
-        <label>附上照片（可选）</label>
-        <input type="file" id="imgUpload" accept="image/*" />
-        <div class="img-preview-wrap" id="imgWrap">
-          <img id="imgPre" />
-          <button class="img-del" onclick="removeImg();event.stopPropagation()">×</button>
-        </div>
-      </div>
-      <div class="form-item">
-        <label>背景音乐｜网易云链接</label>
-        <input type="text" id="music" placeholder="粘贴网易云歌曲分享链接" />
-      </div>
-      <div class="form-item">
-        <label>设置密码｜钥匙</label>
-        <input type="password" id="pwd" placeholder="对方凭此密码查看" />
-      </div>
-      <div class="btn-group">
-        <button class="btn btn-primary" onclick="saveLetter()">封缄 · 存入信箱</button>
-      </div>
+  <div class="view" id="readView">
+    <h2 id="readTitle"></h2>
+    <p class="read-date" id="readTime"></p>
+    <div class="read-audio" id="readAudio"></div>
+    <div class="read-img" id="readImg"></div>
+    <div class="read-content" id="readText"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+      <button class="ops-btn" onclick="backList()">返回信箱</button>
     </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="card write-card" id="writeCard">
+  <div class="write-toggle-bar">
+    <h2 class="title">执笔写信</h2>
+    <span class="toggle-icon" onclick="toggleWrite()">⌄</span>
+  </div>
+  <div class="write-content">
+    <div class="form-item">
+      <label>信件标题</label>
+      <input type="text" id="title" placeholder="给这封信取个温柔的名字" maxlength="60" />
+    </div>
+    <div class="form-item">
+      <label>信件正文</label>
+      <textarea id="content" placeholder="写下想对TA说的话……"></textarea>
+    </div>
+    <div class="form-item">
+      <label>附上照片（可选）</label>
+      <input type="file" id="imgUpload" accept="image/*" />
+      <div class="img-preview-wrap" id="imgWrap">
+        <img id="imgPre" />
+        <button class="img-del" onclick="removeImg();event.stopPropagation()">×</button>
+      </div>
+    </div>
+    <div class="form-item">
+      <label>背景音乐｜网易云链接</label>
+      <input type="text" id="music" placeholder="粘贴网易云歌曲分享链接" />
+    </div>
+    <div class="form-item">
+      <label>设置密码｜钥匙</label>
+      <input type="password" id="pwd" placeholder="对方凭此密码查看" />
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="saveLetter()">封缄 · 存入信箱</button>
+    </div>
+  </div>
+</div>
 
-  <script>
-    const STORAGE_KEY = "letter_v1";
-    let letters = [];
-    let currentImg = null;
-    let targetId = null;
-    let flippedOnce = false;
-    const toast = document.getElementById("toast");
+<div class="toast" id="toast"></div>
 
-    function toggleWrite() {
-      document.getElementById("writeCard").classList.toggle("open");
-    }
-
-    function init() {
-      load();
-      renderList();
-      document.getElementById("unlockPwd").addEventListener("keydown", (e) => e.key === "Enter" && checkPwd());
-    }
-    function load() {
-      try { letters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { letters = []; }
-    }
-    function save() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(letters));
-    }
-    function showToast(msg) {
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2000);
-    }
-
-    document.getElementById("imgUpload").onchange = function (e) {
-      const file = e.target.files[0];
-      if (!file || !file.type.startsWith("image/")) return showToast("请选择图片");
-      const reader = new FileReader();
-      reader.onload = function (ev) {
-        const img = new Image();
-        img.onload = () => {
-          const c = document.createElement("canvas");
-          let w = img.width, h = img.height, max = 900;
-          if (w > max || h > max) { const r = Math.min(max / w, max / h); w *= r; h *= r; }
-          c.width = w; c.height = h;
-          c.getContext("2d").drawImage(img, 0, 0, w, h);
-          currentImg = c.toDataURL("image/jpeg", 0.78);
-          document.getElementById("imgPre").src = currentImg;
-          document.getElementById("imgWrap").style.display = "block";
-        };
-        img.src = ev.target.result;
+<script>
+  const STORAGE_KEY = "letter_v1";
+  let letters = [];
+  let currentImg = null;
+  let targetId = null;
+  let flippedOnce = false;
+  const toast = document.getElementById("toast");
+  function toggleWrite() {
+    document.getElementById("writeCard").classList.toggle("open");
+  }
+  function init() {
+    load();
+    renderList();
+    document.getElementById("unlockPwd").addEventListener("keydown", (e) => e.key === "Enter" && checkPwd());
+  }
+  function load() {
+    try { letters = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { letters = []; }
+  }
+  function save() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(letters));
+  }
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+  document.getElementById("imgUpload").onchange = function (e) {
+    const file = e.target.files[0];
+    if (!file || !file.type.startsWith("image/")) return showToast("请选择图片");
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement("canvas");
+        let w = img.width, h = img.height, max = 900;
+        if (w > max || h > max) { const r = Math.min(max / w, max / h); w *= r; h *= r; }
+        c.width = w; c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        currentImg = c.toDataURL("image/jpeg", 0.78);
+        document.getElementById("imgPre").src = currentImg;
+        document.getElementById("imgWrap").style.display = "block";
       };
-      reader.readAsDataURL(file);
+      img.src = ev.target.result;
     };
-    function removeImg() {
-      currentImg = null;
-      document.getElementById("imgWrap").style.display = "none";
-      document.getElementById("imgUpload").value = "";
+    reader.readAsDataURL(file);
+  };
+  function removeImg() {
+    currentImg = null;
+    document.getElementById("imgWrap").style.display = "none";
+    document.getElementById("imgUpload").value = "";
+  }
+  function saveLetter() {
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    let music = document.getElementById("music").value.trim();
+    const pwd = document.getElementById("pwd").value;
+    if (!title) return showToast("请填写信件标题");
+    if (!content && !currentImg && !music) return showToast("至少填写一项内容");
+    if (!pwd || pwd.length < 2) return showToast("密码至少2位");
+    let musicId = null;
+    if (music && music.includes("music.163.com")) {
+      const m = music.match(/id=(\d+)/);
+      if (m) { musicId = m[1]; music = `https://music.163.com/song/media/outer/url?id=${musicId}.mp3`; }
     }
-
-    function saveLetter() {
-      const title = document.getElementById("title").value.trim();
-      const content = document.getElementById("content").value.trim();
-      let music = document.getElementById("music").value.trim();
-      const pwd = document.getElementById("pwd").value;
-      if (!title) return showToast("请填写信件标题");
-      if (!content && !currentImg && !music) return showToast("至少填写一项内容");
-      if (!pwd || pwd.length < 2) return showToast("密码至少2位");
-
-      let musicId = null;
-      if (music && music.includes("music.163.com")) {
-        const m = music.match(/id=(\d+)/);
-        if (m) { musicId = m[1]; music = `https://music.163.com/song/media/outer/url?id=${musicId}.mp3`; }
-      }
-      const payload = { text: content, imageBase64: currentImg, musicUrl: music, musicId };
-      const encrypt = CryptoJS.AES.encrypt("LETTER:" + JSON.stringify(payload), pwd).toString();
-      const letter = { id: "L" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), title, encryptedContent: encrypt, createdAt: new Date().toISOString() };
-      letters.unshift(letter); save();
-      showToast("信件已封缄存入信箱");
-      document.getElementById("title").value = "";
-      document.getElementById("content").value = "";
-      document.getElementById("music").value = "";
-      document.getElementById("pwd").value = "";
-      removeImg(); renderList();
-      document.getElementById("writeCard").classList.remove("open");
-    }
-
-    function renderList() {
-      const ul = document.getElementById("list");
-      if (letters.length === 0) { ul.innerHTML = '<li class="empty">信箱暂无信件</li>'; return; }
-      ul.innerHTML = letters.map(l => {
-        const t = new Date(l.createdAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" });
-        return `
+    const payload = { text: content, imageBase64: currentImg, musicUrl: music, musicId };
+    const encrypt = CryptoJS.AES.encrypt("LETTER:" + JSON.stringify(payload), pwd).toString();
+    const letter = { id: "L" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8), title, encryptedContent: encrypt, createdAt: new Date().toISOString() };
+    letters.unshift(letter); save();
+    showToast("信件已封缄存入信箱");
+    document.getElementById("title").value = "";
+    document.getElementById("content").value = "";
+    document.getElementById("music").value = "";
+    document.getElementById("pwd").value = "";
+    removeImg(); renderList();
+    document.getElementById("writeCard").classList.remove("open");
+  }
+  function renderList() {
+    const ul = document.getElementById("list");
+    if (letters.length === 0) { ul.innerHTML = '<li class="empty">信箱暂无信件</li>'; return; }
+    ul.innerHTML = letters.map(l => {
+      const t = new Date(l.createdAt).toLocaleString("zh-CN", { dateStyle: "short", timeStyle: "short" });
+      return `
         <li class="letter-item" onclick="openUnlock('${l.id}')">
           <div class="letter-info">
             <h4>${html(l.title)}</h4>
@@ -519,75 +524,67 @@
           </div>
           <div></div>
         </li>`;
-      }).join("");
+    }).join("");
+  }
+  function html(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+  function openUnlock(id) {
+    targetId = id; flippedOnce = false;
+    const l = letters.find(x => x.id === id);
+    document.getElementById("unlockTitle").textContent = "「" + l.title + "」";
+    document.getElementById("unlockPwd").value = "";
+    document.getElementById("env").classList.remove("flip");
+    document.getElementById("envTitle").textContent = "";
+    document.getElementById("envText").textContent = "";
+    switchView("unlockView");
+  }
+  function checkPwd() {
+    const pwd = document.getElementById("unlockPwd").value;
+    if (!pwd) return showToast("请输入密码");
+    const l = letters.find(x => x.id === targetId);
+    let dec;
+    try { dec = CryptoJS.AES.decrypt(l.encryptedContent, pwd).toString(CryptoJS.enc.Utf8); } catch { dec = ""; }
+    if (!dec || !dec.startsWith("LETTER:")) return showToast("密码错误");
+    if (!flippedOnce) {
+      document.getElementById("env").classList.add("flip");
+      flippedOnce = true;
     }
-    function html(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
-
-    function openUnlock(id) {
-      targetId = id; flippedOnce = false;
-      const l = letters.find(x => x.id === id);
-      document.getElementById("unlockTitle").textContent = "「" + l.title + "」";
-      document.getElementById("unlockPwd").value = "";
-      document.getElementById("env").classList.remove("flip");
-      document.getElementById("envTitle").textContent = "";
-      document.getElementById("envText").textContent = "";
-      switchView("unlockView");
+    showToast("密码正确");
+    const payload = JSON.parse(dec.slice(7));
+    document.getElementById("envTitle").textContent = l.title;
+    document.getElementById("envText").textContent = (payload.text || "").slice(0, 40) + "…";
+    setTimeout(() => openRead(payload, l), 800);
+  }
+  function openRead(payload, letter) {
+    document.getElementById("readTitle").textContent = letter.title;
+    document.getElementById("readTime").textContent = "写于 " + new Date(letter.createdAt).toLocaleString("zh-CN");
+    document.getElementById("readText").textContent = payload.text || "";
+    
+    if (payload.musicUrl) {
+      const audio = new Audio(payload.musicUrl);
+      audio.controls = true;
+      audio.muted = false;
+      audio.play().catch(() => {});
+      document.getElementById("readAudio").innerHTML = "";
+      document.getElementById("readAudio").appendChild(audio);
+    } else {
+      document.getElementById("readAudio").innerHTML = "";
     }
-
-    function checkPwd() {
-      const pwd = document.getElementById("unlockPwd").value;
-      if (!pwd) return showToast("请输入密码");
-      const l = letters.find(x => x.id === targetId);
-      let dec;
-      try { dec = CryptoJS.AES.decrypt(l.encryptedContent, pwd).toString(CryptoJS.enc.Utf8); } catch { dec = ""; }
-      if (!dec || !dec.startsWith("LETTER:")) return showToast("密码错误");
-
-      if (!flippedOnce) {
-        document.getElementById("env").classList.add("flip");
-        flippedOnce = true;
-      }
-
-      showToast("密码正确");
-      const payload = JSON.parse(dec.slice(7));
-      document.getElementById("envTitle").textContent = l.title;
-      document.getElementById("envText").textContent = (payload.text || "").slice(0, 40) + "…";
-      setTimeout(() => openRead(payload, l), 800);
-    }
-
-    function openRead(payload, letter) {
-      document.getElementById("readTitle").textContent = letter.title;
-      document.getElementById("readTime").textContent = "写于 " + new Date(letter.createdAt).toLocaleString("zh-CN");
-      document.getElementById("readText").textContent = payload.text || "";
-      
-      if (payload.musicUrl) {
-        const audio = new Audio(payload.musicUrl);
-        audio.controls = true;
-        audio.muted = false;
-        audio.play().catch(() => {});
-        document.getElementById("readAudio").innerHTML = "";
-        document.getElementById("readAudio").appendChild(audio);
-      } else {
-        document.getElementById("readAudio").innerHTML = "";
-      }
-
-      document.getElementById("readImg").innerHTML = payload.imageBase64 ? `<img src="${payload.imageBase64}" style="max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border)">` : "";
-      switchView("readView");
-    }
-
-    function backList() {
-      const audio = document.querySelector("#readAudio audio");
-      if (audio) audio.pause();
-      switchView("listView");
-      renderList();
-    }
-    function switchView(name) {
-      ["listView", "unlockView", "readView"].forEach(n => document.getElementById(n).classList.remove("active"));
-      document.getElementById(name).classList.add("active");
-    }
-
-    window.onload = function () {
-      init();
-    };
-  </script>
+    document.getElementById("readImg").innerHTML = payload.imageBase64 ? `<img src="${payload.imageBase64}" style="max-width:100%;max-height:220px;border-radius:10px;border:2px solid var(--border)">` : "";
+    switchView("readView");
+  }
+  function backList() {
+    const audio = document.querySelector("#readAudio audio");
+    if (audio) audio.pause();
+    switchView("listView");
+    renderList();
+  }
+  function switchView(name) {
+    ["listView", "unlockView", "readView"].forEach(n => document.getElementById(n).classList.remove("active"));
+    document.getElementById(name).classList.add("active");
+  }
+  window.onload = function () {
+    init();
+  }
+</script>
 </body>
 </html>
